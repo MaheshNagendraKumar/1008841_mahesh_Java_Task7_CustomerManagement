@@ -35,28 +35,35 @@ public class CustomerServiceImpl implements ICustomerService {
 
 	@Override
 	public Customer findCustomerById(int cid) throws CustomeExceptions {
+		if (cid > 0) {
+			Optional<Customer> findFirst = customerStore.entrySet().stream()
+					.filter(entry -> entry.getValue().getCid() == cid).map(Entry::getValue).findFirst();
 
-		Optional<Customer> findFirst = customerStore.entrySet().stream()
-				.filter(entry -> entry.getValue().getCid() == cid).map(Entry::getValue).findFirst();
-
-		if (findFirst.isPresent()) {
-			return findFirst.get();
+			if (findFirst.isPresent()) {
+				return findFirst.get();
+			}
+			throw new CustomeExceptions("Customer not found with the given id");
 		}
-
-		throw new CustomeExceptions("Customer not found with the given id");
+		throw new CustomeExceptions("Invalid Input");
 	}
 
 	@Override
 	public List<Customer> findCustomersByFirstNameAscendingId(String cFirstName) {
 		// TODO Auto-generated method stub
-		List<Customer> matchingFirstNameCustomerList = customerStore.entrySet().stream()
-				.filter(customerEntry -> customerEntry.getValue().getcFirstName().equalsIgnoreCase(cFirstName))
-				.map(Entry::getValue).sorted(Comparator.comparing(Customer::getCid)).collect(Collectors.toList());
-
-		if (!matchingFirstNameCustomerList.isEmpty()) {
-			return matchingFirstNameCustomerList;
+		if(cFirstName.length() > 3) {
+			List<Customer> matchingFirstNameCustomerList = customerStore.entrySet().stream()
+					.filter(customerEntry -> customerEntry.getValue().getcFirstName().toLowerCase()
+							.startsWith(cFirstName.toLowerCase()))
+					.map(Entry::getValue)
+					.sorted(Comparator.comparing(Customer::getCid))
+					.collect(Collectors.toList());
+			
+			if (!matchingFirstNameCustomerList.isEmpty()) {
+				return matchingFirstNameCustomerList;
+			}
+			
+			throw new CustomeExceptions("No Customer found with the given firstname");
 		}
-
-		throw new CustomeExceptions("No Customer found with the given firstname");
+		throw new CustomeExceptions("Insufficient text for search");
 	}
 }

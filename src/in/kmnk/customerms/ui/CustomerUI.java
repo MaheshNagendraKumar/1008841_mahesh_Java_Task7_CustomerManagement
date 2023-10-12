@@ -51,7 +51,7 @@ public class CustomerUI {
 			
 			
 			System.out.println("\n\n");
-			String firstname = "aMARESH";
+			String firstname = "aMar";
 			List<Customer> findCustomersByFirstNameAscendingId = service.findCustomersByFirstNameAscendingId(firstname);
 			for(Customer customer:findCustomersByFirstNameAscendingId) {
 				System.out.println(customer);

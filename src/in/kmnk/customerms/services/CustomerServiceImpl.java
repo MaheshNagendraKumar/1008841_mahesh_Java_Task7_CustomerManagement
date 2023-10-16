@@ -9,28 +9,23 @@ import java.util.stream.Collectors;
 
 import in.kmnk.customerms.domain.Customer;
 import in.kmnk.customerms.globalException.CustomeExceptions;
+import in.kmnk.customerms.utility.CommonMethods;
 
 public class CustomerServiceImpl implements ICustomerService {
 
-	Map<Integer, Customer> customerStore;
-	int customerCount;
+	private Map<Integer, Customer> customerStore;
+	private CommonMethods utilityMethod = new CommonMethods();
 
-	public CustomerServiceImpl(Map<Integer, Customer> customerStore, int customerCount) {
-		super();
-		this.customerStore = customerStore;
-		this.customerCount = customerCount;
-	}
 
 	@Override
-	public Customer registerCustomer(Customer c) throws CustomeExceptions {
-
-		if (c.getcFirstName().length() >= 2 && c.getcFirstName().length() <= 10 && c.getcLastName().length() >= 2
-				&& c.getcLastName().length() <= 10) {
-
-			customerStore.put(customerCount++, c);
-			return c;
+	public Customer registerCustomer(String fname, String lname) throws CustomeExceptions {
+		if (utilityMethod.isValid(fname) && utilityMethod.isValid(lname)) {
+			int id=utilityMethod.generateId();
+			Customer customer = new Customer(id, fname, lname);
+			customerStore.put(id, customer);
+			return customer;
 		}
-		throw new CustomeExceptions("invalid Input");
+		return null;
 	}
 
 	@Override
@@ -49,21 +44,20 @@ public class CustomerServiceImpl implements ICustomerService {
 
 	@Override
 	public List<Customer> findCustomersByFirstNameAscendingId(String cFirstName) {
-		// TODO Auto-generated method stub
-		if(cFirstName.length() > 3) {
+		if (cFirstName != null && cFirstName.length() > 3) {
 			List<Customer> matchingFirstNameCustomerList = customerStore.entrySet().stream()
 					.filter(customerEntry -> customerEntry.getValue().getcFirstName().toLowerCase()
 							.startsWith(cFirstName.toLowerCase()))
-					.map(Entry::getValue)
-					.sorted(Comparator.comparing(Customer::getCid))
+					.map(Entry::getValue).sorted(Comparator.comparing(Customer::getCid))
 					.collect(Collectors.toList());
-			
+
 			if (!matchingFirstNameCustomerList.isEmpty()) {
 				return matchingFirstNameCustomerList;
 			}
-			
+
 			throw new CustomeExceptions("No Customer found with the given firstname");
 		}
 		throw new CustomeExceptions("Insufficient text for search");
 	}
+
 }

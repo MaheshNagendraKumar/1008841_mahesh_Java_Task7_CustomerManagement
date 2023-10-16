@@ -8,7 +8,7 @@ public interface ICustomerService {
 	
 	// keep employee store List<Employee>
 //	public Customer registerCustomer(String efirstName, String elastName);
-	public Customer registerCustomer(Customer c);
+	public Customer registerCustomer(String fname, String lname);
 	
 	public Customer findCustomerById(int eid);
 	
